@@ -43,11 +43,16 @@ public class CharacterFactory {
 
     public static Character createRandomCharacterWithLibReflections()
             throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        Reflections reflections = new Reflections("model");
 
+        Reflections reflections = new Reflections("model");
         Set<Class<?>> subTypes = reflections.get(Scanners.SubTypes.of(Character.class).asClass());
+
+        subTypes.removeIf(c -> c.getSimpleName().equals("Noble")
+                || java.lang.reflect.Modifier.isAbstract(c.getModifiers()));
+
         int choice = RANDOM.nextInt(subTypes.size());
         Class<?> characterClass = (Class<?>) subTypes.toArray()[choice];
+
         return (Character) characterClass.getDeclaredConstructor().newInstance();
     }
 
